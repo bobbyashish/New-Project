@@ -19,9 +19,7 @@ return new class extends Migration
             if (!Schema::hasColumn('users', 'last_name')) {
                 $table->string('last_name')->nullable();
             }
-            if (!Schema::hasColumn('users', 'last_name')) {
-                $table->string('last_name')->nullable();
-            }
+          
         });
     }
 

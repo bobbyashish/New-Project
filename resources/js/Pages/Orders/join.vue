@@ -15,10 +15,10 @@ const props = defineProps({
     },
 });
 
-const deleteCustomer = (id) => {
+const deleteOrder = (id) => {
     let res = confirm("Are You sure");
     if (res) {
-        router.delete(route("customers.destroy", id), {
+        router.delete(route("orders.destroy", id), {
             onError: () => {},
             onSuccess: () => {},
         });
@@ -28,7 +28,7 @@ const query = ref(props.params.query);
 
 const searchQuery = () => {
     console.log("asd");
-    router.get(route("customers.index"), {
+    router.get(route("orders.index"), {
         query: query.value,
     });
 };
@@ -40,13 +40,13 @@ console.log(props);
     <Head title="Dashboard" />
             <div class="card my-3">
                     <h1 class="title px-4 my-5 my-5" style="text-align: center">
-                        Customers Table
+                        Order Table
                     </h1>
 
             <div class="container my-2 my-5">
                 <span>
             
-                     <a class="btn btn-primary float-start"  style="width: 150px" :href="route('customers.create')">Create Customer</a>         
+                     <a class="btn btn-primary float-start"  style="width: 150px" :href="route('orders.create')">Create Orders</a>         
                 <input
                     class="form-control float-end"
                     placeholder="search"
@@ -59,32 +59,28 @@ console.log(props);
 
             <table class="table py-3 px-3 mx-3 my-3">
                 <thead>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>State</th>
-                    <th>Country</th>
+                    <th>Product Name</th>
+                    <th>Customer-Id</th>
+                    <th>Amount</th>
+                  
                     <th>Actions</th>
                 </thead>
                 <tbody>
-                    <tr :key="customer" v-for="customer in props.data?.data" >
-                        <td>{{ customer.first_name }}</td>
-                        <td>{{ customer.last_name }}</td>
-                        <td>{{ customer.email }}</td>
-                        <td>{{ customer.phone }}</td>
-                        <td>{{ customer.state }}</td>
-                        <td>{{ customer.country }}</td>
+                    <tr :key="order" v-for="order in props.data?.data" >
+                        <td>{{ order.product_name }}</td>
+                        <td>{{ order.customer.first_name }}</td>
+                        <td>{{ order.amount }}</td>
+                       
                         
                         <td>
                             <button class="btn btn-primary">View</button>
 
-                            <Link :href="route('customers.edit', customer.id)">
+                            <Link :href="route('orders.edit', order.id)">
                                 <button class="btn btn-warning">Edit</button>
                             </Link>
 
                             <button
-                                @click="deleteCustomer(customer.id)"
+                                @click="deleteOrder(order.id)"
                                 class="btn btn-danger"
                             >
                                 Delete

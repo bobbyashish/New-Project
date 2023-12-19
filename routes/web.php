@@ -14,12 +14,18 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\EmployeesController;
+use App\Http\Controllers\orderController;
+use App\Http\Controllers\ProductController;
+use App\Mail\SendMail;
+use Illuminate\Support\Facades\Mail;
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
     Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::post('register', [RegisterEmployeeController::class, 'store']);
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
@@ -37,6 +43,12 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+
+        Route::get('/mailer' ,function() {
+            \Mail::to('test@tes.com')->send(new SendMail);
+        });
+
+        
 });
 
 Route::middleware('auth')->group(function () {
@@ -61,7 +73,9 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 
-    Route::resource('customers', CustomerController::class);
+        Route::get('mail', [ProfileController::class,"mail"]);
+    
+
 });
 
 
@@ -76,15 +90,14 @@ Route::middleware('auth')->group(function () {
 |
 */
 
-
 Route::get('/', function () {
-    if (!\Auth::check()) {
-        return redirect('/login');
-    } else {
-        return redirect('/dashboard');
-    }
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
 });
-
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -99,8 +112,31 @@ Route::get('/form', function () {
     return Inertia::render('form');
 })->middleware(['auth', 'verified'])->name('form');
 
+
+
+Route::resource('products', ProductController::class);
+
+Route::resource('customers', CustomerController::class);
+Route::resource('employees', EmployeesController::class);
+Route::resource('orders', orderController::class);
+
+
+
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+Route::get('/mailer', function() {
+    $name = "Funny Coder";
+    Mail::to('hello@example.com')->send(new SendMail());
+});
+
+
+Route::get('send',[ProfileController::class,"sendnotification"]);
+
+
+
+

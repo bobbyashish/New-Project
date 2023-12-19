@@ -2,6 +2,7 @@
 import { Head, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
+
 defineProps({
     canLogin: {
         type: Boolean,

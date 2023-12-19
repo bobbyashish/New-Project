@@ -16,6 +16,15 @@ return new class extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->string('email')->unique();
+            $table->string('phone');
+            $table->string('address1');
+            $table->string('address2')->nullable();
+            $table->string('city');
+            $table->string('state');
+            $table->string('country');
+            $table->string('pincode');
+            $table->string('type');
+            $table->boolean('terms_accepted');
             $table->timestamps();
         });
     }

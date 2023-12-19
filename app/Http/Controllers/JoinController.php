@@ -1,13 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Http\Requests\CustomerValidationRequest;
+
+use App\Http\Controllers\Controller;
 use App\Http\Resources\CustomerListResource;
-use App\Models\Customer;
+use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
-class CustomerController extends Controller
+class JoinController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,21 +18,28 @@ class CustomerController extends Controller
     {
         
             $page = $request->input('page', 1); // default 1
-            $perPage = $request->input('perPage', 5); // default 100
+            $perPage = $request->input('perPage', 5); // default 5
             $queryString = $request->input('query', null);
-            $sort = explode('.', $request->input('sort', 'first_name'));
+            $sort = explode('.', $request->input('sort', 'product_name'));
             $order = $request->input('order', 'desc');
-            $data = Customer::query()
+            $data = Order::query()
+            ->with('customer')
+
     
             ->where(function ($query) use ($queryString) {
                 if ($queryString && $queryString != '') {
                     // filter result
                     // $query->where(DB::raw("CONCAT(first_name,' ',last_name)"), 'like', '%' . $queryString . '%');
-                    $query->where('first_name', 'like', '%' . $queryString . '%');
-                    $query->orWhere('last_name', 'like', '%' . $queryString . '%');
-                    $query->orWhere('email', 'like', '%' . $queryString . '%');
+                    $query->where('product_name', 'like', '%' . $queryString . '%');
+                    $query->orWhere('amount', 'like', '%' . $queryString . '%');
+                    $query->orWhere('customer_id', 'like', '%' . $queryString . '%');
+                    $query = DB::table('orders');
+                    
+                    
+                    
                 }
             })
+            ->join('customers', 'orders.customer_id', '=', 'customers.id')
             ->when(count($sort) == 1, function ($query) use ($sort, $order) {
                 $query->orderBy($sort[0], $order);
             })
@@ -46,12 +55,13 @@ class CustomerController extends Controller
                 return json_encode($props);
             }
             if (count($data) <= 0 && $page > 1) {
-                return redirect()->route('customers.index', ['page' => 1]);
+                return redirect()->route('joins.index', ['page' => 1]);
             }
-        
-        return Inertia::render("Customers/Index",$props);
-           
 
+            
+
+           
+        return Inertia::render("Joins/Index",$props);
     }
 
     /**
@@ -59,16 +69,15 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        return Inertia::render("Customers/Create");
+        //
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CustomerValidationRequest $request)
+    public function store(Request $request)
     {
-        Customer::create($request->all());
-        return redirect(route('customers.index'));
+        //
     }
 
     /**
@@ -84,10 +93,7 @@ class CustomerController extends Controller
      */
     public function edit(string $id)
     {
-        $customer = Customer::find($id);
-        return Inertia::render("Customers/Edit", [
-            'customer' => $customer
-        ]);
+        //
     }
 
     /**
@@ -95,9 +101,7 @@ class CustomerController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $customer = Customer::find($id);
-        $customer->update($request->all());
-        return redirect(route('customers.index'));
+        //
     }
 
     /**
@@ -105,8 +109,6 @@ class CustomerController extends Controller
      */
     public function destroy(string $id)
     {
-        $customer = Customer::find($id);
-        $customer->delete();
-        return redirect(route('customers.index'));
+        //
     }
 }
